@@ -1,5 +1,4 @@
 require 'gosu'
-
 # drawing the static gallows frame
 class Gallows
   SIZE = 10
@@ -11,7 +10,6 @@ class Gallows
   end
 
   def draw
-    # .draw_rect(x, y, width, height, c,
     Gosu.draw_rect(@x, @y, 160, SIZE, @color)
     Gosu.draw_rect(540, 130, SIZE, @y, @color)
     Gosu.draw_rect(380, 130, 160, SIZE, @color)

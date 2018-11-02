@@ -1,5 +1,6 @@
 require 'gosu'
 require_relative 'gallows'
+require_relative 'word'
 
 # game window and application run
 class Game < Gosu::Window
@@ -11,7 +12,8 @@ class Game < Gosu::Window
     self.caption = 'Hangman: The Game'
 
     @gallows = Gallows.new
-    @font = Gosu::Font.new(self, "Arial", 20)
+    p @password = Word.new
+    @font = Gosu::Font.new(self, 'Arial', 20)
     @font_big = Gosu::Font.new(self, 'Arial', 58)
     @game_over = false
     @paused = false
@@ -24,7 +26,8 @@ class Game < Gosu::Window
 
   def draw
     @gallows.draw
-    @font.draw_text("SCORE: #{@timer}", WINDOW_WIDTH - 150, 20, 1, 1.0, 1.0, Gosu::Color::AQUA)
+    # @password.draw
+    @font_big.draw_text(('_ ' * @password.length), 50, 55, 1, 1.0, 1.0, Gosu::Color.rgb(192, 229, 227))
     @font_big.draw_text('PAUSED', 100, 100, 1, 1.0, 1.0, Gosu::Color::YELLOW) if @paused
     @font_big.draw_text('GAME OVER', 100, 100, 1, 1.0, 1.0, Gosu::Color::RED) if @game_over
   end
