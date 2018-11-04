@@ -29,8 +29,8 @@ class Game < Gosu::Window
     @font_big = Gosu::Font.new(self, 'Arial', 58)
     @game_over = false
     @color = LIGHT_BLUE
-    @guessed = []
-    @wrong_guesses = 0
+    @rightly_guessed = []
+    @wrongly_guessed = []
   end
 
   def guess
@@ -38,12 +38,23 @@ class Game < Gosu::Window
     if @user_guess.nil?
       @hidden = @password.hidden
     elsif @password.word.include? @user_guess
-      @guessed << @user_guess
+      @rightly_guessed << @user_guess
       @color = GREEN
-      @hidden = @password.reveal_letter(@guessed)
+      @hidden = @password.reveal_letter(@rightly_guessed)
     else
       @color = RED
-      @wrong_guesses += 1
+      @wrongly_guessed << @user_guess
+    end
+  end
+
+  def draw_hanged_man
+    case @wrongly_guessed.uniq.length
+    when 1 then @gallows.head = true
+    when 2 then @gallows.torso = true
+    when 3 then @gallows.arm_right = true
+    when 4 then @gallows.arm_left = true
+    when 5 then @gallows.leg_left = true
+    when 6 then @gallows.leg_right = true
     end
   end
 
@@ -51,10 +62,16 @@ class Game < Gosu::Window
     @win = !(@hidden.include? '_')
   end
 
+  def check_for_game_over
+    @game_over = @wrongly_guessed.uniq.length == 6
+  end
+
   def update
     unless @game_over
       guess
+      draw_hanged_man
       check_for_win
+      check_for_game_over
     end
   end
 
@@ -62,8 +79,9 @@ class Game < Gosu::Window
     @font.draw_text("Your guess: #{@user_guess}", 50, 150, 1, 1.0, 1.0, @color)
     @gallows.draw
     @font_big.draw_text(@hidden, 50, 55, 1, 1.0, 1.0, LIGHT_BLUE)
+    @font.draw_text(@wrongly_guessed.uniq.join(' '), 50, 300, 1, 1.0, 1.0, RED)
     @font_big.draw_text('You won!', 150, 200, 1, 1.0, 1.0, GREEN) if @win
-    @font_big.draw_text('Game over', 100, 100, 1, 1.0, 1.0, RED) if @game_over
+    @font_big.draw_text('Game over', 150, 200, 1, 1.0, 1.0, RED) if @game_over
   end
 
   def button_down(id)
